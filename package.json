@@ -1,0 +1,35 @@
+{
+  "name": "ktv",
+  "version": "0.0.1",
+  "description": "A web app project base on Koa, Typescript and Vue.",
+  "main": "server/main.ts",
+  "scripts": {
+    "tsc:watch": "tsc --watch",
+    "dev": "nodemon ./dist/main.js",
+    "build": "tsc",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MarxJiao/ktv.git"
+  },
+  "keywords": [
+    "Koa",
+    "Typescript",
+    "Vue"
+  ],
+  "author": "Marx",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MarxJiao/ktv/issues"
+  },
+  "homepage": "https://github.com/MarxJiao/ktv#readme",
+  "devDependencies": {
+    "@types/koa": "^2.0.44",
+    "nodemon": "^1.17.3",
+    "typescript": "^2.8.1"
+  },
+  "dependencies": {
+    "koa": "^2.5.0"
+  }
+}
