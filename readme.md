@@ -2,6 +2,8 @@
 
 A web app project base on Koa, Typescript and Vue.
 
+[设计文档](./docs/design.md)
+
 ## 调试
 
 开发调试使用nodemon来自动重启node进程，所以需要全局安装nodemon。
