@@ -52,3 +52,54 @@
 1. vscode调试基于typescript的node程序。
 2. 开发时启动项目，需要同时进行前后端编译，重启，热加载等。
 3. 生产环境部署，项目启动，https支持等。
+
+# 2018.03.08更新
+
+感觉nodemon重启服务，不适合配合koa-webpack使用，因为每次重启都会重新编译前端代码。看了nuxt.js的源码，找到了新的实现思路。nuxt.js前后端都使用webpack编译，开发时，使用webpack-dev-middleware和webpack-hot-middleware实现前端代码的热更新。目前来看是后端代码使用webpack做热加载，加载后并不会立即执行，使用chokidar做加载后的重新执行，使用chokidar，监控了部分文件变化。
+
+使用chokidar监控代码如下：
+
+```javascript
+watchFiles() {
+    const src = this.options.srcDir
+    let patterns = [
+        r(src, this.options.dir.layouts),
+        r(src, this.options.dir.store),
+        r(src, this.options.dir.middleware),
+        r(src, `${this.options.dir.layouts}/*.{vue,js}`),
+        r(src, `${this.options.dir.layouts}/**/*.{vue,js}`)
+    ]
+    if (this._nuxtPages) {
+        patterns.push(
+        r(src, this.options.dir.pages),
+        r(src, `${this.options.dir.pages}/*.{vue,js}`),
+        r(src, `${this.options.dir.pages}/**/*.{vue,js}`)
+        )
+    }
+    patterns = _.map(patterns, p => upath.normalizeSafe(p))
+
+    const options = Object.assign({}, this.options.watchers.chokidar, {
+        ignoreInitial: true
+    })
+    /* istanbul ignore next */
+    const refreshFiles = _.debounce(() => this.generateRoutesAndFiles(), 200)
+
+    // Watch for src Files
+    this.filesWatcher = chokidar
+        .watch(patterns, options)
+        .on('add', refreshFiles)
+        .on('unlink', refreshFiles)
+
+    // Watch for custom provided files
+    let customPatterns = _.concat(
+        this.options.build.watch,
+        ..._.values(_.omit(this.options.build.styleResources, ['options']))
+    )
+    customPatterns = _.map(_.uniq(customPatterns), p =>
+        upath.normalizeSafe(p)
+    )
+    this.customFilesWatcher = chokidar
+        .watch(customPatterns, options)
+        .on('change', refreshFiles)
+}
+```
